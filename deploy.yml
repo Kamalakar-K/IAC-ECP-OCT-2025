@@ -1,0 +1,121 @@
+# trigger:
+#   branches:
+#     include:
+#       - main
+#       - dev
+#-----------------------------------------------------------------
+
+#Run only if specific folder/files change, e.g., your Environment/dev folder:
+# trigger:
+#   branches:
+#     include:
+#       - main
+#       - dev
+#   paths:
+#     include:
+#       - 'Environment/**'
+#       - 'Modules/**'
+
+#------------------------------------------------------------------------------------------
+#Use pr triggers only
+# trigger: none
+
+# pr:
+#   branches:
+#     include:
+#       - main
+#       - dev
+
+
+#-------------------------------------------------------------
+#Use none and trigger manually
+trigger: none
+
+
+variables:
+  environment: dev
+  workingDirectory: 'Environment/$(environment)'
+
+stages:
+- stage: Terraform
+  displayName: "Terraform Deployment"
+  jobs:
+  - job: TerraformJob
+    displayName: "Run Terraform on Windows 11 (Self-hosted)"
+    pool:
+      name: Self-pool
+      demands:
+        - Agent.Name -equals oct2025
+
+    steps:
+    - checkout: self
+
+    # -------------------------
+    # Debug – verify paths
+    # -------------------------
+    - powershell: |
+        Write-Host "Repo root:"
+        Get-ChildItem
+        Write-Host "Working directory (Environment/$(environment)):"
+        Get-ChildItem "$(workingDirectory)"
+      displayName: 'Debug Folder Structure'
+
+    # -------------------------
+    # Terraform Init
+    # -------------------------
+    - task: AzureCLI@2
+      displayName: 'Terraform Init'
+      inputs:
+        azureSubscription: 'IAC-OCT-2025'
+        scriptType: ps
+        scriptLocation: inlineScript
+        inlineScript: |
+          $path = "$(workingDirectory)"
+          if (!(Test-Path $path)) {
+            Write-Error "Working directory not found: $path"
+            exit 1
+          }
+          cd $path
+          terraform version
+          terraform init -reconfigure
+
+    # -------------------------
+    # Terraform Validate
+    # -------------------------
+    - task: AzureCLI@2
+      displayName: 'Terraform Validate'
+      inputs:
+        azureSubscription: 'IAC-OCT-2025'
+        scriptType: ps
+        scriptLocation: inlineScript
+        inlineScript: |
+          cd "$(workingDirectory)"
+          terraform validate
+
+    # -------------------------
+    # Terraform Plan
+    # -------------------------
+    - task: AzureCLI@2
+      displayName: 'Terraform Plan'
+      inputs:
+        azureSubscription: 'IAC-OCT-2025'
+        scriptType: ps
+        scriptLocation: inlineScript
+        inlineScript: |
+          cd "$(workingDirectory)"
+          terraform plan `
+            -var-file="terraform.tfvars" `
+            -out=tfplan
+
+    # -------------------------
+    # Terraform Apply
+    # -------------------------
+    - task: AzureCLI@2
+      displayName: 'Terraform Apply'
+      inputs:
+        azureSubscription: 'IAC-OCT-2025'
+        scriptType: ps
+        scriptLocation: inlineScript
+        inlineScript: |
+          cd "$(workingDirectory)"
+          terraform apply -auto-approve tfplan
