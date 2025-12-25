@@ -1,17 +1,14 @@
 locals {
-  vm_names = [
-    for i in range(1, var.vm_count + 1) :
-    format("%s-%02d", var.vm_base_name, i)
-  ]
-
   data_disks = flatten([
-    for vm_index, vm_name in local.vm_names : [
-      for disk_index, disk in var.data_disks : {
-        key      = "${vm_name}-disk-${disk_index}"
-        vm_name  = vm_name
-        lun      = disk_index
-        size     = disk.size
-        tier     = disk.tier
+    for vm_key, vm in var.windows_virtual_machines : [
+      for disk in lookup(vm, "data_disks", []) : {
+        vm_key  = vm_key
+        name    = disk.name
+        size_gb = disk.size_gb
+        lun     = disk.lun
+        storage = disk.storage_type
+        rg      = vm.rg_name
+        location= vm.location
       }
     ]
   ])

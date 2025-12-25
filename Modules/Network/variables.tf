@@ -1,3 +1,9 @@
-variable "subnet_id" {}
-variable "vm_count" { type = number }
-variable "vm_base_name" {}
+variable "nics" {
+  description = "Map of NICs to create"
+  type = map(object({
+    nic_name  = string
+    location  = string
+    rg_name   = string
+    subnet_id = string
+  }))
+}

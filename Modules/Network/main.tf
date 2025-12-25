@@ -1,12 +1,13 @@
 resource "azurerm_network_interface" "nic" {
-  count               = var.vm_count
-  name                = "${var.vm_base_name}-${format("%02d", count.index + 1)}-nic"
-  location            = var.location
-  resource_group_name = var.resource_group_name
+  for_each            = var.nics
+  name                = each.value.nic_name
+  location            = each.value.location
+  resource_group_name = each.value.rg_name
 
   ip_configuration {
-    name                          = "internal"
-    subnet_id                     = var.subnet_id
+    name                          = "ipconfig1"
+    subnet_id                     = each.value.subnet_id
     private_ip_address_allocation = "Dynamic"
   }
 }
+
