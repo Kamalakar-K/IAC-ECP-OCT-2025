@@ -4,32 +4,48 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:   # Manual trigger
+  workflow_dispatch:
 
 jobs:
   terraform:
-    name: Terraform Deployment
-    runs-on: [self-hosted, windows, kk]   # Use exact runner labels
+    name: Terraform Deploy (Azure)
+    runs-on: [self-hosted, windows, kk]
 
     env:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: 1.14.3
-
-    - name: Terraform Apply All
+    - name: Verify Terraform Installation
+      shell: cmd
       run: |
-        cd Env/Dev
+        terraform version
+
+    - name: Terraform Init
+      shell: cmd
+      run: |
+        cd Env\Dev
         terraform init -reconfigure
+
+    - name: Terraform Validate
+      shell: cmd
+      run: |
+        cd Env\Dev
         terraform validate
+
+    - name: Terraform Plan
+      shell: cmd
+      run: |
+        cd Env\Dev
         terraform plan -var-file="terraform.tfvars" -out=tfplan
+
+    - name: Terraform Apply
+      shell: cmd
+      run: |
+        cd Env\Dev
         terraform apply -auto-approve tfplan
