@@ -1,0 +1,63 @@
+name: Terraform Deployment
+
+# Trigger manually only
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        default: 'Dev'
+
+jobs:
+  terraform:
+    name: Terraform Deployment
+    runs-on: [self-hosted, windows, ecp-oct-2025]
+
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Verify folder structure
+      shell: pwsh
+      run: |
+        Write-Host "Repo root:"
+        Get-ChildItem
+        Write-Host "Working directory (Env/$(${{ github.event.inputs.environment }})):"
+        Get-ChildItem "Env/$(${{ github.event.inputs.environment }})"
+
+    - name: Terraform Init
+      shell: pwsh
+      run: |
+        $path = "Env/$(${{ github.event.inputs.environment }})"
+        if (!(Test-Path $path)) {
+          Write-Error "Working directory not found: $path"
+          exit 1
+        }
+        cd $path
+        terraform version
+        terraform init -reconfigure
+
+    - name: Terraform Validate
+      shell: pwsh
+      run: |
+        cd "Env/$(${{ github.event.inputs.environment }})"
+        terraform validate
+
+    - name: Terraform Plan
+      shell: pwsh
+      run: |
+        cd "Env/$(${{ github.event.inputs.environment }})"
+        terraform plan -var-file="terraform.tfvars" -out=tfplan
+
+    - name: Terraform Apply
+      shell: pwsh
+      run: |
+        cd "Env/$(${{ github.event.inputs.environment }})"
+        terraform apply -auto-approve tfplan
