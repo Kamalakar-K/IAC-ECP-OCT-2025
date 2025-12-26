@@ -9,7 +9,7 @@ on:
 jobs:
   terraform:
     name: Terraform Deployment
-    runs-on: [self-hosted, windows, ecp-oct-2025]
+    runs-on: [self-hosted, windows, KK, KAMALAKAR]
 
     env:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
