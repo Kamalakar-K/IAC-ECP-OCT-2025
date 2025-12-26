@@ -1,0 +1,51 @@
+name: Terraform Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    name: Terraform Deploy (Azure)
+    runs-on: [self-hosted, windows, kk]
+
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Verify Terraform Installation
+      shell: cmd
+      run: |
+        terraform version
+
+    - name: Terraform Init
+      shell: cmd
+      run: |
+        cd Env\Dev
+        terraform init -reconfigure
+
+    - name: Terraform Validate
+      shell: cmd
+      run: |
+        cd Env\Dev
+        terraform validate
+
+    - name: Terraform Plan
+      shell: cmd
+      run: |
+        cd Env\Dev
+        terraform plan -var-file="terraform.tfvars" -out=tfplan
+
+    - name: Terraform Apply
+      shell: cmd
+      run: |
+        cd Env\Dev
+        terraform apply -auto-approve tfplan
