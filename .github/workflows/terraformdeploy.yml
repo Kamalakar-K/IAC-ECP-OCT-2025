@@ -1,13 +1,10 @@
 name: Terraform Deployment
 
-# Trigger manually only
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment to deploy'
-        required: true
-        default: 'Dev'
+  push:
+    branches:
+      - main
+  workflow_dispatch:   # Allows manual trigger from GitHub UI
 
 jobs:
   terraform:
@@ -15,49 +12,36 @@ jobs:
     runs-on: [self-hosted, windows, ecp-oct-2025]
 
     env:
-      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     steps:
-    - name: Checkout code
+    - name: Checkout Repository
       uses: actions/checkout@v3
 
-    - name: Verify folder structure
-      shell: pwsh
-      run: |
-        Write-Host "Repo root:"
-        Get-ChildItem
-        Write-Host "Working directory (Env/$(${{ github.event.inputs.environment }})):"
-        Get-ChildItem "Env/$(${{ github.event.inputs.environment }})"
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.14.3
 
     - name: Terraform Init
-      shell: pwsh
       run: |
-        $path = "Env/$(${{ github.event.inputs.environment }})"
-        if (!(Test-Path $path)) {
-          Write-Error "Working directory not found: $path"
-          exit 1
-        }
-        cd $path
-        terraform version
+        cd Env/Dev
         terraform init -reconfigure
 
     - name: Terraform Validate
-      shell: pwsh
       run: |
-        cd "Env/$(${{ github.event.inputs.environment }})"
+        cd Env/Dev
         terraform validate
 
     - name: Terraform Plan
-      shell: pwsh
       run: |
-        cd "Env/$(${{ github.event.inputs.environment }})"
+        cd Env/Dev
         terraform plan -var-file="terraform.tfvars" -out=tfplan
 
     - name: Terraform Apply
-      shell: pwsh
       run: |
-        cd "Env/$(${{ github.event.inputs.environment }})"
+        cd Env/Dev
         terraform apply -auto-approve tfplan
