@@ -1,31 +1,31 @@
 network_interfaces = {
 #  nic1 = {
 #    nic_name  = "vm01-nic"
-#    location  = "eastus"
-#    rg_name   = "RG-AIOps-EUS-01"
-#    subnet_id = "/subscriptions/a4aaec1b-85b5-4b4f-bb86-a45cdee1cf14/resourceGroups/RG-AIOps-EUS-01/providers/Microsoft.Network/virtualNetworks/vnet-eus-01/subnets/dev-subnet"
+#    location  = "CentralUS"
+#    rg_name   = "RG-OCT-AZ-01"
+#    subnet_id = "/subscriptions/f13abd97-15cb-4218-a2e9-d8fc7376e907/resourceGroups/RG-OCT-AZ-01/providers/Microsoft.Network/virtualNetworks/vnet-cus-01/subnets/dev-subnet"
 #  }
 
 #  nic2 = {
 #    nic_name  = "vm01-nic2"
-#    location  = "eastus"
-#    rg_name   = "RG-AIOps-EUS-01"
-#    subnet_id = "/subscriptions/a4aaec1b-85b5-4b4f-bb86-a45cdee1cf14/resourceGroups/RG-AIOps-EUS-01/providers/Microsoft.Network/virtualNetworks/vnet-eus-01/subnets/dev-subnet"
+#    location  = "CentralUS"
+#    rg_name   = "RG-OCT-AZ-01"
+#    subnet_id = "/subscriptions/f13abd97-15cb-4218-a2e9-d8fc7376e907/resourceGroups/RG-OCT-AZ-01/providers/Microsoft.Network/virtualNetworks/vnet-cus-01/subnets/dev-subnet"
 #  }
 
 #   nic3 = {
 #    nic_name  = "vm01-nic3"
-#    location  = "eastus"
-#    rg_name   = "RG-AIOps-EUS-01"
-#    subnet_id = "/subscriptions/a4aaec1b-85b5-4b4f-bb86-a45cdee1cf14/resourceGroups/RG-AIOps-EUS-01/providers/Microsoft.Network/virtualNetworks/vnet-eus-01/subnets/dev-subnet"
+#    location  = "CentralUS"
+#    rg_name   = "RG-OCT-AZ-01"
+#    subnet_id = "/subscriptions/f13abd97-15cb-4218-a2e9-d8fc7376e907/resourceGroups/RG-OCT-AZ-01/providers/Microsoft.Network/virtualNetworks/vnet-cus-01/subnets/dev-subnet"
 #  }
 }
 
 windows_virtual_machines = {
 #  vm01 = {
 #    vm_name    = "winvm01"
-#    location   = "eastus"
-#    rg_name    = "RG-AIOps-EUS-01"
+#    location   = "CentralUS"
+#    rg_name    = "RG-OCT-AZ-01"
 #    size       = "Standard_B2s"
 #    admin_user = "cscadmin"
 #    nic_key    = "nic1"
@@ -53,8 +53,8 @@ windows_virtual_machines = {
 
 #  vm02 = {
 #    vm_name    = "winvm02"
-#    location   = "eastus"
-#    rg_name    = "RG-AIOps-EUS-01"
+#    location   = "CentralUS"
+#    rg_name    = "RG-OCT-AZ-01"
 #    size       = "Standard_B2s"
 #    admin_user = "cscadmin"
 #    nic_key    = "nic2"
@@ -82,8 +82,8 @@ windows_virtual_machines = {
 
 #  vm03 = {
 #    vm_name    = "winvm03"
-#    location   = "eastus"
-#    rg_name    = "RG-AIOps-EUS-01"
+#    location   = "CentralUS"
+#    rg_name    = "RG-OCT-AZ-01"
 #    size       = "Standard_B2s"
 #    admin_user = "cscadmin"
 #    nic_key    = "nic3"
