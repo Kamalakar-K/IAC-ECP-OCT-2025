@@ -1,10 +1,10 @@
 network_interfaces = {
-#  nic1 = {
-#    nic_name  = "vm01-nic"
-#    location  = "CentralUS"
-#    rg_name   = "RG-OCT-AZ-01"
-#    subnet_id = "/subscriptions/f13abd97-15cb-4218-a2e9-d8fc7376e907/resourceGroups/RG-OCT-AZ-01/providers/Microsoft.Network/virtualNetworks/vnet-cus-01/subnets/dev-subnet"
-#  }
+  nic1 = {
+    nic_name  = "vm01-nic"
+    location  = "CentralUS"
+    rg_name   = "RG-OCT-AZ-01"
+    subnet_id = "/subscriptions/f13abd97-15cb-4218-a2e9-d8fc7376e907/resourceGroups/RG-OCT-AZ-01/providers/Microsoft.Network/virtualNetworks/vnet-cus-01/subnets/dev-subnet"
+  }
 
 #  nic2 = {
 #    nic_name  = "vm01-nic2"
